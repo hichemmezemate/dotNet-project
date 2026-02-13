@@ -23,4 +23,9 @@ public class DemandeService : IDemandeService
 
         await _repository.SaveAsync(demande);
     }
+
+    public async Task<IEnumerable<Demande>> RecupererDemandesParEmail(string email)
+    {
+        return await _repository.GetByEmailAsync(email);
+    }
 }

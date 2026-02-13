@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using GestionDemandesAzure.Application.Ports;
+using Microsoft.AspNetCore.Http;
 
 namespace GestionDemandesAzure.Infrastructure.Authentification;
 
@@ -15,14 +16,19 @@ public class WebUserContext : IUserContexte
     public string GetCurrentEmail()
     {
         var user = _httpContextAccessor.HttpContext?.User;
+        
+        if (!IsAuthenticated())
+        {
+            throw new Exception("L'utilisateur n'est pas authentifié.");
+        }
+
         return user?.FindFirst("preferred_username")?.Value 
                ?? user?.FindFirst(ClaimTypes.Email)?.Value 
-               ?? "utilisateur@inconnu.com";
+               ?? throw new Exception("Impossible d'extraire l'email du jeton d'authentification.");
     }
 
     public bool IsAuthenticated()
     {
-        var user = _httpContextAccessor.HttpContext?.User;
-        return user?.Identity?.IsAuthenticated ?? false;
+        return _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
     }
 }

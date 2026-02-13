@@ -1,7 +1,7 @@
 namespace GestionDemandesAzure.Application.Ports;
 
-public interface IUserContexte 
+public interface IUserContexte
 {
     string GetCurrentEmail();
-    bool IsAuthenticated(); 
+    bool IsAuthenticated();
 }
