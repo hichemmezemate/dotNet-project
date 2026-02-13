@@ -7,9 +7,9 @@ namespace GestionDemandesAzure.Application.Services;
 public class DemandeService : IDemandeService
 {
     private readonly IDemandeRepository _repository;
-    private readonly IUserContext _userContext;
+    private readonly IUserContexte _userContext;
 
-    public DemandeService(IDemandeRepository repository, IUserContext userContext)
+    public DemandeService(IDemandeRepository repository, IUserContexte userContext)
     {
         _repository = repository;
         _userContext = userContext;
