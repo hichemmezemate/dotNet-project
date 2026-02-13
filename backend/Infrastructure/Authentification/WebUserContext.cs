@@ -17,14 +17,23 @@ public class WebUserContext : IUserContexte
     {
         var user = _httpContextAccessor.HttpContext?.User;
         
-        if (!IsAuthenticated())
+        if (user == null || !IsAuthenticated())
         {
-            throw new Exception("L'utilisateur n'est pas authentifié.");
+            return string.Empty;
         }
 
-        return user?.FindFirst("preferred_username")?.Value 
-               ?? user?.FindFirst(ClaimTypes.Email)?.Value 
-               ?? throw new Exception("Impossible d'extraire l'email du jeton d'authentification.");
+        var email = user.FindFirst("preferred_username")?.Value 
+               ?? user.FindFirst(ClaimTypes.Upn)?.Value 
+               ?? user.FindFirst(ClaimTypes.Email)?.Value 
+               ?? user.FindFirst("email")?.Value;
+
+        if (string.IsNullOrEmpty(email))
+        {
+            Console.WriteLine("--- ATTENTION : Aucun email trouvé dans les claims suivants ---");
+            foreach (var c in user.Claims) Console.WriteLine($"Type: {c.Type}, Value: {c.Value}");
+        }
+
+        return email ?? string.Empty;
     }
 
     public bool IsAuthenticated()

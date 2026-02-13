@@ -17,10 +17,19 @@ public class DemandeService : IDemandeService
 
     public async Task EnregistrerDemande(Demande demande)
     {
-        demande.Email = _userContext.GetCurrentEmail();
+        var email = _userContext.GetCurrentEmail();
+
+        if (string.IsNullOrEmpty(email))
+        {
+            Console.WriteLine("---> ERREUR SERVICE : Impossible d'enregistrer, l'email est vide.");
+            throw new Exception("L'utilisateur n'a pas d'identifiant valide dans son jeton.");
+        }
+
+        demande.Email = email;
         demande.DateSoumission = DateTime.UtcNow;
         demande.Status = "En attente";
 
+        Console.WriteLine($"---> SERVICE : Enregistrement de la demande pour {email}");
         await _repository.SaveAsync(demande);
     }
 

@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using GestionDemandesAzure.Application.Ports;
 using GestionDemandesAzure.Domain.Entities;
 
@@ -11,52 +11,41 @@ namespace GestionDemandesAzure.Web.Controllers;
 public class DemandeController : ControllerBase
 {
     private readonly IDemandeService _demandeService;
-    private readonly IUserContexte _userContext;
     private readonly IUserService _userService;
+    private readonly IUserContexte _userContext;
 
-    public DemandeController(IDemandeService demandeService, IUserContexte userContext, IUserService userService)
+    public DemandeController(IDemandeService demandeService, IUserService userService, IUserContexte userContext)
     {
         _demandeService = demandeService;
-        _userContext = userContext;
         _userService = userService;
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetMyDemandes()
-    {
-        await _userService.SynchroniserUtilisateurAsync();
-        try
-        {
-            var userEmail = _userContext.GetCurrentEmail();
-            var demandes = await _demandeService.RecupererDemandesParEmail(userEmail);
-            return Ok(demandes);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { error = ex.Message });
-        }
+        _userContext = userContext;
     }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Demande demande)
     {
-        if (!ModelState.IsValid)
+        try 
         {
-            return BadRequest(ModelState);
-        }
+            await _userService.SynchroniserUtilisateurAsync();
 
-        try
-        {
             await _demandeService.EnregistrerDemande(demande);
-            return Ok(new { message = "Demande enregistrée avec succès" });
+
+            return Ok(new { message = "Dossier créé avec succès" });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { error = ex.Message });
+            Console.WriteLine($"---> ERREUR CONTROLLER : {ex.Message}");
+            return BadRequest(new { error = ex.Message });
         }
     }
 
-    [HttpGet("ping")]
-    [AllowAnonymous]
-    public IActionResult Ping() => Ok(new { status = "API Online", time = DateTime.Now });
+    [HttpGet]
+    public async Task<IActionResult> GetMyDemandes()
+    {
+        var email = _userContext.GetCurrentEmail();
+        if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+        var result = await _demandeService.RecupererDemandesParEmail(email);
+        return Ok(result);
+    }
 }

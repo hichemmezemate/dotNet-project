@@ -10,9 +10,6 @@ function App() {
     <>
       <AuthenticatedTemplate>
         <Navbar />
-        <nav style={{ padding: '10px', backgroundColor: '#eee' }}>
-            <Link to="/">Dashboard</Link> | <Link to="/nouveau">Nouvelle Demande</Link>
-        </nav>
         <div style={{ padding: '20px' }}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
