@@ -2,6 +2,9 @@
 
 Une application Web Full-Stack permettant aux utilisateurs de soumettre des dossiers via leur compte Microsoft (Azure Entra ID) et aux administrateurs de valider ou refuser ces demandes via un accès local sécurisé.
 
+### Diagramme de use case : 
+<img width="4942" height="4025" alt="User-Centric API-2026-02-20-110831" src="https://github.com/user-attachments/assets/fd29aff9-3bc1-48b2-804b-c1450f226bbe" />
+
 ---
 
 ## 🚀 Fonctionnalités
@@ -43,6 +46,13 @@ Le backend respecte les principes de l'**Architecture Hexagonale** (Ports et Ada
 - **Authentification** : `@azure/msal-react` pour la gestion des tokens Microsoft.
 
 ---
+
+### Diagramme d'architecture : 
+<img width="4320" height="7635" alt="User-Centric API-2026-02-20-110230" src="https://github.com/user-attachments/assets/d664af80-16f5-4be9-b4b1-83fd736627b0" />
+
+### Diagramme de séquence : 
+<img width="8124" height="8192" alt="User-Centric API-2026-02-20-110436" src="https://github.com/user-attachments/assets/5da1aea4-ff51-4576-ad20-07a337ba916b" />
+
 
 ## ⚙️ Prérequis
 
