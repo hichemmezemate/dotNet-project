@@ -8,6 +8,7 @@ using GestionDemandesAzure.Domain.Interfaces;
 using GestionDemandesAzure.Infrastructure.Data;
 using GestionDemandesAzure.Infrastructure.Repositories; 
 using GestionDemandesAzure.Infrastructure.Authentification;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,8 +20,24 @@ builder.Configuration["AzureAd:Domain"] = Environment.GetEnvironmentVariable("AZ
 builder.Configuration["AzureAd:TenantId"] = Environment.GetEnvironmentVariable("AZURE_TENANT_ID");
 builder.Configuration["AzureAd:ClientId"] = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID");
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+var authBuilder = builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+});
+
+authBuilder.AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+
+authBuilder.AddCookie("AdminScheme", options =>
+{
+    options.LoginPath = "/api/AdminAuth/login";
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return Task.CompletedTask;
+    };
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -36,7 +53,8 @@ builder.Services.AddCors(options => {
     options.AddPolicy("AllowReact", policy => {
         policy.WithOrigins("http://localhost:5173")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials(); 
     });
 });
 

@@ -1,27 +1,45 @@
-import { Routes, Route, Link } from "react-router-dom";
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { Navbar } from './components/Navbar';
+import { Dashboard } from './pages/Dashboard';
+import { FormPage } from './pages/FormPage';
+import { Login } from './pages/Login';
+import { AdminLogin } from './pages/AdminLogin';
+import { AdminDashboard } from './pages/AdminDashboard';
 import { AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
-import { Dashboard } from "./pages/Dashboard";
-import { FormPage } from "./pages/FormPage";
-import { Login } from "./pages/Login";
-import { Navbar } from "./components/Navbar";
 
 function App() {
   return (
-    <>
-      <AuthenticatedTemplate>
-        <Navbar />
-        <div style={{ padding: '20px' }}>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/nouveau" element={<FormPage />} />
-          </Routes>
-        </div>
-      </AuthenticatedTemplate>
+    <div className="h-screen w-full bg-slate-50"> 
+      <Routes>
+        <Route path="/" element={
+          <>
+            <AuthenticatedTemplate>
+              <Navbar />
+              <div className="p-4"><Dashboard /></div>
+            </AuthenticatedTemplate>
+            <UnauthenticatedTemplate>
+              <Login />
+            </UnauthenticatedTemplate>
+          </>
+        } />
+        
+        <Route path="/nouveau" element={
+          <AuthenticatedTemplate>
+            <Navbar />
+            <div className="p-4"><FormPage /></div>
+          </AuthenticatedTemplate>
+        } />
 
-      <UnauthenticatedTemplate>
-        <Login />
-      </UnauthenticatedTemplate>
-    </>
+        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/admin" element={
+          <div className="h-full">
+            <Navbar />
+            <AdminDashboard />
+          </div>
+        } />
+      </Routes>
+    </div>
   );
 }
 

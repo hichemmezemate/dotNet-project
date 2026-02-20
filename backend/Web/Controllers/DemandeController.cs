@@ -24,7 +24,7 @@ public class DemandeController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Demande demande)
     {
-        try 
+        try
         {
             await _userService.SynchroniserUtilisateurAsync();
 
@@ -47,5 +47,21 @@ public class DemandeController : ControllerBase
 
         var result = await _demandeService.RecupererDemandesParEmail(email);
         return Ok(result);
+    }
+
+    [HttpGet("all")]
+    [Authorize(AuthenticationSchemes = "AdminScheme")]
+    public async Task<IActionResult> GetAll()
+    {
+        var result = await _demandeService.RecupererToutesLesDemandes();
+        return Ok(result);
+    }
+
+    [HttpPatch("{id}/status")]
+    [Authorize(AuthenticationSchemes = "AdminScheme")]
+    public async Task<IActionResult> UpdateStatus(int id, [FromBody] string status)
+    {
+        await _demandeService.ChangerStatutDemande(id, status);
+        return Ok(new { message = "Statut mis à jour" });
     }
 }

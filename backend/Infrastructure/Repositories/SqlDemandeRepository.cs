@@ -27,4 +27,22 @@ public class SqlDemandeRepository : IDemandeRepository
             .OrderByDescending(d => d.DateSoumission)
             .ToListAsync();
     }
+
+    public async Task UpdateAsync(Demande demande)
+    {
+        _context.Demandes.Update(demande);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<Demande?> GetByIdAsync(int id)
+    {
+        return await _context.Demandes.FindAsync(id);
+    }
+
+    public async Task<IEnumerable<Demande>> GetAllAsync()
+    {
+        return await _context.Demandes
+            .OrderByDescending(d => d.DateSoumission)
+            .ToListAsync();
+    }
 }
